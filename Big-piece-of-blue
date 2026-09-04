@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Big Piece of Blue - A Children's Storybook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background-color: #e0f2fe;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .story-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .bounce-gentle {
+            animation: bounceGentle 3s infinite ease-in-out;
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-slow {
+            animation: pulseSlow 4s infinite ease-in-out;
+        }
+        @keyframes pulseSlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .float-cloud {
+            animation: floatCloud 6s infinite ease-in-out;
+        }
+        @keyframes floatCloud {
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(15px); }
+        }
+        .page-transition {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-3 sm:p-6 overflow-x-hidden text-slate-800">
+
+    <!-- Header Navigation -->
+    <header class="w-full max-w-4xl flex justify-between items-center bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm mb-4 border border-blue-100">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-full bg-sky-400 flex items-center justify-center text-white font-bold text-lg">
+                💙
+            </div>
+            <h1 class="text-lg sm:text-xl font-bold text-sky-800 tracking-wide">The Big Piece of Blue</h1>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+            <button id="readAloudBtn" onclick="toggleReadAloud()" class="flex items-center space-x-2 bg-amber-400 hover:bg-amber-500 text-amber-950 px-3 py-1.5 rounded-xl font-semibold text-sm transition shadow-sm active:scale-95">
+                <span id="speakerIcon">🔊</span>
+                <span id="readBtnText" class="hidden sm:inline">Read to Me</span>
+            </button>
+            <button onclick="toggleGridMode()" class="bg-sky-100 hover:bg-sky-200 text-sky-700 px-3 py-1.5 rounded-xl font-semibold text-sm transition">
+                📜 All Pages
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-4xl flex-1 flex flex-col items-center justify-center my-auto">
+        
+        <!-- Storybook View -->
+        <div id="storybookCard" class="w-full bg-white rounded-3xl shadow-xl border-4 border-sky-200 p-4 sm:p-8 flex flex-col items-center relative overflow-hidden transition-all duration-300">
+            
+            <!-- Page Number & Audio Indicator -->
+            <div class="w-full flex justify-between items-center mb-2 px-2 text-sky-500 font-semibold text-sm">
+                <span id="pageIndicator">Page 1 of 9</span>
+                <span id="readingStatus" class="hidden text-amber-600 animate-pulse text-xs font-bold">✨ Reading aloud...</span>
+            </div>
+
+            <!-- Visual Canvas / Illustration Area -->
+            <div id="illustrationContainer" class="w-full h-64 sm:h-80 md:h-96 rounded-2xl bg-gradient-to-b from-sky-100 to-indigo-50 border-2 border-sky-100 flex items-center justify-center relative overflow-hidden my-2 shadow-inner">
+                <!-- SVG Illustration dynamically rendered here -->
+            </div>
+
+            <!-- Story Text -->
+            <div class="w-full min-h-[100px] flex items-center justify-center my-4 px-2 sm:px-6 text-center">
+                <p id="storyText" class="story-font text-2xl sm:text-3xl md:text-4xl text-sky-900 font-bold leading-relaxed tracking-wide">
+                    <!-- Text rendered here -->
+                </p>
+            </div>
+
+            <!-- Page Controls -->
+            <div class="w-full flex items-center justify-between pt-4 border-t border-sky-100">
+                <button id="prevBtn" onclick="changePage(-1)" class="flex items-center space-x-2 bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-5 py-3 rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed transition active:scale-95 text-lg">
+                    <span>👈</span>
+                    <span>Back</span>
+                </button>
+
+                <!-- Page Dots -->
+                <div id="dotsContainer" class="flex space-x-2">
+                    <!-- Dots generated here -->
+                </div>
+
+                <button id="nextBtn" onclick="changePage(1)" class="flex items-center space-x-2 bg-sky-500 hover:bg-sky-600 text-white font-bold px-6 py-3 rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed transition shadow-md active:scale-95 text-lg">
+                    <span>Next</span>
+                    <span>👉</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- All Pages Grid View (Hidden by default) -->
+        <div id="gridCard" class="hidden w-full bg-white rounded-3xl shadow-xl border-4 border-sky-200 p-4 sm:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-sky-800">Story Overview</h2>
+                <button onclick="toggleGridMode()" class="bg-sky-500 text-white font-bold px-4 py-2 rounded-xl text-sm hover:bg-sky-600">
+                    Close
+                </button>
+            </div>
+            <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Pages mapped here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-4xl text-center py-4 text-sky-600 text-xs font-semibold">
+        A gentle story about love, body kindness, and celebrating every shape and size 💖
+    </footer>
+
+    <!-- Audio Player / Script Logic -->
+    <script>
+        const apiKey = ""; // Gemini API Key runtime default
+
+        const pages = [
+            {
+                page: 1,
+                text: "Out in the soft blue sky, bright and new, lived a gentle friend named Big Piece of Blue.",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <defs>
+                            <linearGradient id="skyGrad1" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#bae6fd"/>
+                                <stop offset="100%" stop-color="#e0f2fe"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="300" fill="url(#skyGrad1)"/>
+                        
+                        <!-- Fluffy clouds -->
+                        <g class="float-cloud">
+                            <path d="M 30,80 Q 45,60 65,70 Q 80,50 100,70 Q 115,65 120,80 Q 130,100 100,105 L 40,105 Q 20,100 30,80 Z" fill="#ffffff" opacity="0.9"/>
+                            <path d="M 280,60 Q 295,40 315,50 Q 330,30 350,50 Q 365,45 370,60 Q 380,80 350,85 L 290,85 Q 270,80 280,60 Z" fill="#ffffff" opacity="0.8"/>
+                        </g>
+
+                        <!-- Big Piece of Blue character -->
+                        <g class="bounce-gentle" transform="translate(130, 80)">
+                            <ellipse cx="70" cy="70" rx="65" ry="60" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            <!-- Happy Face -->
+                            <circle cx="50" cy="60" r="6" fill="#0f172a"/>
+                            <circle cx="90" cy="60" r="6" fill="#0f172a"/>
+                            <circle cx="52" cy="58" r="2" fill="#ffffff"/>
+                            <circle cx="92" cy="58" r="2" fill="#ffffff"/>
+                            <!-- Rosy Cheeks -->
+                            <ellipse cx="40" cy="72" rx="7" ry="5" fill="#f43f5e" opacity="0.4"/>
+                            <ellipse cx="100" cy="72" rx="7" ry="5" fill="#f43f5e" opacity="0.4"/>
+                            <!-- Big Smile -->
+                            <path d="M 52,78 Q 70,98 88,78" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Waving Arm -->
+                            <path d="M 130,70 Q 150,50 145,40" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Sparkles -->
+                        <text x="70" y="160" font-size="20">✨</text>
+                        <text x="310" y="140" font-size="24">✨</text>
+                        <text x="280" y="220" font-size="18">🌟</text>
+                    </svg>
+                `
+            },
+            {
+                page: 2,
+                text: "Blue was big, round, and grand! The softest, cuddliest friend in the land.",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#e0f2fe"/>
+                        
+                        <!-- Little friend bird -->
+                        <g transform="translate(60, 100)" class="bounce-gentle">
+                            <circle cx="20" cy="20" r="16" fill="#fbbf24"/>
+                            <polygon points="6,20 0,16 6,12" fill="#f97316"/>
+                            <circle cx="24" cy="16" r="3" fill="#000"/>
+                            <!-- Bird wing -->
+                            <path d="M 18,20 Q 10,30 25,26" fill="#f59e0b"/>
+                        </g>
+
+                        <!-- Big Piece of Blue - Extra Cuddly and Wide -->
+                        <g transform="translate(110, 60)" class="pulse-slow">
+                            <ellipse cx="90" cy="90" rx="85" ry="75" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            <!-- Happy closed eyes -->
+                            <path d="M 65,75 Q 75,65 85,75" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+                            <path d="M 105,75 Q 115,65 125,75" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Rosy Cheeks -->
+                            <circle cx="55" cy="85" r="9" fill="#f43f5e" opacity="0.4"/>
+                            <circle cx="135" cy="85" r="9" fill="#f43f5e" opacity="0.4"/>
+                            <!-- Big joyful mouth -->
+                            <path d="M 75,90 Q 95,115 115,90 Z" fill="#e11d48"/>
+                            <!-- Soft Little Arms -->
+                            <path d="M 10,90 Q -10,80 -5,100" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+                            <path d="M 170,90 Q 190,80 185,100" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+                        </g>
+
+                        <text x="30" y="240" font-size="22">🌸</text>
+                        <text x="340" y="230" font-size="22">🌼</text>
+                    </svg>
+                `
+            },
+            {
+                page: 3,
+                text: "One day a little cloud whispered low: 'My, you take up so much room below!'",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#f0f9ff"/>
+                        
+                        <!-- Big Blue looking slightly surprised/thoughtful -->
+                        <g transform="translate(50, 70)">
+                            <ellipse cx="80" cy="80" rx="75" ry="70" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            <!-- Curious eyes -->
+                            <circle cx="110" cy="70" r="7" fill="#0f172a"/>
+                            <circle cx="130" cy="70" r="7" fill="#0f172a"/>
+                            <!-- Small neutral mouth -->
+                            <ellipse cx="120" cy="95" rx="6" ry="4" fill="#0f172a"/>
+                            <ellipse cx="70" cy="85" rx="7" ry="5" fill="#f43f5e" opacity="0.3"/>
+                        </g>
+
+                        <!-- Whispering Cloud -->
+                        <g transform="translate(240, 50)" class="float-cloud">
+                            <path d="M 20,50 Q 30,30 50,40 Q 65,25 80,40 Q 95,35 100,50 Q 110,65 85,70 L 30,70 Q 10,65 20,50 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="3"/>
+                            <!-- Cheeky eyes looking down -->
+                            <circle cx="50" cy="48" r="3" fill="#334155"/>
+                            <circle cx="65" cy="48" r="3" fill="#334155"/>
+                            <path d="M 52,58 Q 58,54 64,58" fill="none" stroke="#334155" stroke-width="2"/>
+                            <!-- Speech bubble dots -->
+                            <circle cx="10" cy="75" r="4" fill="#94a3b8"/>
+                            <circle cx="-5" cy="85" r="6" fill="#94a3b8"/>
+                        </g>
+                    </svg>
+                `
+            },
+            {
+                page: 4,
+                text: "Big Blue looked down at his belly so round. 'Is being big bad?' he wondered aloud.",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#f1f5f9"/>
+                        
+                        <!-- Sad/Pondering Blue -->
+                        <g transform="translate(120, 80)">
+                            <ellipse cx="80" cy="75" rx="75" ry="70" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            <!-- Looking down eyes -->
+                            <path d="M 60,65 Q 68,75 76,65" fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+                            <path d="M 90,65 Q 98,75 106,65" fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+                            <!-- Slight downturned mouth -->
+                            <path d="M 75,95 Q 83,88 91,95" fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+                            <!-- Patting belly hands -->
+                            <path d="M 25,90 Q 50,110 65,115" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M 135,90 Q 110,110 95,115" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Gentle question mark cloud -->
+                        <text x="270" y="80" font-size="36">❓</text>
+                    </svg>
+                `
+            },
+            {
+                page: 5,
+                text: "Then Sun swooped in with a warm, golden ray! 'Oh Big Blue, you are perfect today!'",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#fef3c7"/>
+                        
+                        <!-- Bright Sun -->
+                        <g transform="translate(70, 60)" class="pulse-slow">
+                            <!-- Rays -->
+                            <circle cx="60" cy="60" r="50" fill="#fbbf24"/>
+                            <path d="M 60,0 L 60,-15 M 60,120 L 60,135 M -15,60 L 0,60 M 120,60 L 135,60 M 10,10 L -2,-2 M 110,110 L 122,122 M 10,110 L -2,122 M 110,10 L 122,-2" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+                            <!-- Sun face -->
+                            <circle cx="45" cy="50" r="5" fill="#78350f"/>
+                            <circle cx="75" cy="50" r="5" fill="#78350f"/>
+                            <path d="M 45,70 Q 60,85 75,70" fill="none" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Blue feeling happier -->
+                        <g transform="translate(200, 100)">
+                            <ellipse cx="65" cy="60" rx="60" ry="55" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            <circle cx="50" cy="50" r="5" fill="#0f172a"/>
+                            <circle cx="80" cy="50" r="5" fill="#0f172a"/>
+                            <path d="M 50,68 Q 65,80 80,68" fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+                        </g>
+                        
+                        <text x="320" y="80" font-size="28">☀️</text>
+                        <text x="40" y="240" font-size="24">💖</text>
+                    </svg>
+                `
+            },
+            {
+                page: 6,
+                text: "'Big bodies hold the best, warmest hugs, like soft cozy blankets and snuggly bugs!'",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#e0f2fe"/>
+                        
+                        <!-- Big Blue hugging tiny friends -->
+                        <g transform="translate(100, 60)" class="pulse-slow">
+                            <ellipse cx="100" cy="90" rx="90" ry="80" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            
+                            <!-- Happy Face -->
+                            <path d="M 80,70 Q 90,60 100,70" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+                            <path d="M 110,70 Q 120,60 130,70" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+                            <path d="M 90,82 Q 105,100 120,82" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+
+                            <!-- Wrapped Big Arms -->
+                            <path d="M 10,100 Q 100,140 190,100" fill="none" stroke="#0284c7" stroke-width="14" stroke-linecap="round"/>
+
+                            <!-- Snuggled friends on Blue -->
+                            <!-- Yellow Bunny -->
+                            <circle cx="80" cy="110" r="12" fill="#fef08a"/>
+                            <ellipse cx="76" cy="92" rx="3" ry="8" fill="#fef08a"/>
+                            <ellipse cx="84" cy="92" rx="3" ry="8" fill="#fef08a"/>
+                            
+                            <!-- Red Bird -->
+                            <circle cx="120" cy="112" r="10" fill="#f87171"/>
+                            <polygon points="120,112 126,112 123,116" fill="#f97316"/>
+                        </g>
+
+                        <text x="40" y="90" font-size="20">💕</text>
+                        <text x="330" y="110" font-size="20">💕</text>
+                    </svg>
+                `
+            },
+            {
+                page: 7,
+                text: "Tall, short, or round, wide, thin, or small—every sweet body is special to all!",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#f0fdf4"/>
+                        
+                        <!-- Diverse shapes playing together -->
+                        <!-- Tall Tree Friend -->
+                        <rect x="50" y="90" width="24" height="130" rx="12" fill="#4ade80"/>
+                        <circle cx="62" cy="120" r="3" fill="#000"/>
+                        <circle cx="70" cy="120" r="3" fill="#000"/>
+                        <path d="M 60,130 Q 66,136 72,130" fill="none" stroke="#000" stroke-width="2"/>
+
+                        <!-- Big Blue -->
+                        <ellipse cx="180" cy="155" rx="55" ry="50" fill="#38bdf8" stroke="#0284c7" stroke-width="3"/>
+                        <circle cx="165" cy="145" r="4" fill="#000"/>
+                        <circle cx="195" cy="145" r="4" fill="#000"/>
+                        <path d="M 170,160 Q 180,170 190,160" fill="none" stroke="#000" stroke-width="3"/>
+
+                        <!-- Tiny Star -->
+                        <polygon points="290,130 295,145 310,145 298,154 302,168 290,158 278,168 282,154 270,145 285,145" fill="#facc15"/>
+                        <circle cx="287" cy="148" r="2" fill="#000"/>
+                        <circle cx="293" cy="148" r="2" fill="#000"/>
+
+                        <!-- Small Triangle -->
+                        <polygon points="340,140 365,190 315,190" fill="#f472b6"/>
+
+                        <!-- Ground line -->
+                        <path d="M 20,220 Q 200,210 380,220" stroke="#86efac" stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                `
+            },
+            {
+                page: 8,
+                text: "Big Piece of Blue smiled wide as could be. 'I love my big self! I am proud to be ME!'",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect width="400" height="300" fill="#faf5ff"/>
+                        
+                        <!-- Glowing Proud Blue -->
+                        <g transform="translate(100, 50)" class="bounce-gentle">
+                            <!-- Golden aura / halo of pride -->
+                            <ellipse cx="100" cy="100" rx="98" ry="88" fill="#fef08a" opacity="0.5"/>
+                            <ellipse cx="100" cy="100" rx="88" ry="78" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            
+                            <!-- Proud happy face -->
+                            <circle cx="75" cy="80" r="7" fill="#0f172a"/>
+                            <circle cx="125" cy="80" r="7" fill="#0f172a"/>
+                            <circle cx="77" cy="77" r="2.5" fill="#fff"/>
+                            <circle cx="127" cy="77" r="2.5" fill="#fff"/>
+                            <circle cx="60" cy="95" r="10" fill="#f43f5e" opacity="0.4"/>
+                            <circle cx="140" cy="95" r="10" fill="#f43f5e" opacity="0.4"/>
+                            
+                            <!-- Big joyful smile -->
+                            <path d="M 70,95 Q 100,135 130,95 Z" fill="#be123c"/>
+
+                            <!-- Arms high up in victory -->
+                            <path d="M 15,70 Q -15,30 5,20" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+                            <path d="M 185,70 Q 215,30 195,20" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+                        </g>
+
+                        <text x="30" y="80" font-size="28">⭐</text>
+                        <text x="330" y="80" font-size="28">⭐</text>
+                        <text x="50" y="240" font-size="24">🎉</text>
+                        <text x="320" y="240" font-size="24">💖</text>
+                    </svg>
+                `
+            },
+            {
+                page: 9,
+                text: "So love every body, big, medium, or small. We are all wonderful, one and all!",
+                svg: `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <defs>
+                            <linearGradient id="rainbow" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#f87171"/>
+                                <stop offset="33%" stop-color="#facc15"/>
+                                <stop offset="66%" stop-color="#4ade80"/>
+                                <stop offset="100%" stop-color="#38bdf8"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="300" fill="#f0f9ff"/>
+
+                        <!-- Rainbow arc -->
+                        <path d="M 30,240 Q 200,60 370,240" fill="none" stroke="url(#rainbow)" stroke-width="16" stroke-linecap="round" opacity="0.6"/>
+
+                        <!-- Big Group Hug -->
+                        <g transform="translate(120, 90)" class="pulse-slow">
+                            <ellipse cx="80" cy="80" rx="75" ry="65" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                            <!-- Happy Face -->
+                            <circle cx="65" cy="65" r="5" fill="#000"/>
+                            <circle cx="95" cy="65" r="5" fill="#000"/>
+                            <path d="M 65,80 Q 80,95 95,80" fill="none" stroke="#000" stroke-width="3"/>
+                        </g>
+
+                        <!-- Surrounding happy friends -->
+                        <circle cx="90" cy="180" r="22" fill="#fbbf24"/>
+                        <circle cx="280" cy="180" r="18" fill="#f472b6"/>
+                        <path d="M 180,210 Q 200,190 220,210" stroke="#f43f5e" stroke-width="4"/>
+
+                        <text x="185" y="60" font-size="32">👑</text>
+                        <text x="180" y="260" font-size="22" font-weight="bold" fill="#0369a1" text-anchor="middle">THE END 💖</text>
+                    </svg>
+                `
+            }
+        ];
+
+        let currentPageIndex = 0;
+        let isReading = false;
+        let speechSynthesisUtterance = null;
+
+        // Initialize state
+        window.onload = function() {
+            renderDots();
+            showPage(0);
+        };
+
+        function renderDots() {
+            const container = document.getElementById('dotsContainer');
+            container.innerHTML = '';
+            pages.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-sky-500 w-6' : 'bg-sky-200 hover:bg-sky-300'}`;
+                dot.onclick = () => goToPage(idx);
+                container.appendChild(dot);
+            });
+        }
+
+        function updateDots() {
+            const dots = document.getElementById('dotsContainer').children;
+            Array.from(dots).forEach((dot, idx) => {
+                if (idx === currentPageIndex) {
+                    dot.className = 'w-6 h-3 rounded-full bg-sky-500 transition-all duration-300';
+                } else {
+                    dot.className = 'w-3 h-3 rounded-full bg-sky-200 hover:bg-sky-300 transition-all duration-300';
+                }
+            });
+        }
+
+        function showPage(index) {
+            if (index < 0 || index >= pages.length) return;
+            
+            // Stop speech if active
+            stopReadAloud();
+
+            currentPageIndex = index;
+            const page = pages[currentPageIndex];
+
+            // Play gentle page turn chime
+            playPageTurnSound();
+
+            // Update UI
+            const container = document.getElementById('illustrationContainer');
+            const storyText = document.getElementById('storyText');
+            
+            container.style.opacity = '0';
+            storyText.style.opacity = '0';
+
+            setTimeout(() => {
+                container.innerHTML = page.svg;
+                storyText.innerText = page.text;
+                container.style.opacity = '1';
+                storyText.style.opacity = '1';
+            }, 150);
+
+            document.getElementById('pageIndicator').innerText = `Page ${page.page} of ${pages.length}`;
+            document.getElementById('prevBtn').disabled = currentPageIndex === 0;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentPageIndex === pages.length - 1) {
+                nextBtn.innerHTML = '<span>Start Over</span> <span>🔄</span>';
+            } else {
+                nextBtn.innerHTML = '<span>Next</span> <span>👉</span>';
+            }
+
+            updateDots();
+        }
+
+        function changePage(delta) {
+            if (currentPageIndex + delta >= pages.length) {
+                goToPage(0); // Loop back
+            } else {
+                showPage(currentPageIndex + delta);
+            }
+        }
+
+        function goToPage(index) {
+            showPage(index);
+        }
+
+        function toggleGridMode() {
+            const storyCard = document.getElementById('storybookCard');
+            const gridCard = document.getElementById('gridCard');
+
+            if (gridCard.classList.contains('hidden')) {
+                // Populate grid
+                const container = document.getElementById('gridContainer');
+                container.innerHTML = pages.map((p, idx) => `
+                    <div onclick="selectFromGrid(${idx})" class="p-4 bg-sky-50 rounded-2xl border-2 border-sky-100 hover:border-sky-400 cursor-pointer transition shadow-sm hover:shadow-md">
+                        <div class="h-44 rounded-xl overflow-hidden bg-white mb-3">
+                            ${p.svg}
+                        </div>
+                        <p class="text-xs font-bold text-sky-500 mb-1">Page ${p.page}</p>
+                        <p class="story-font text-sky-900 font-bold text-sm leading-snug">${p.text}</p>
+                    </div>
+                `).join('');
+
+                storyCard.classList.add('hidden');
+                gridCard.classList.remove('hidden');
+            } else {
+                gridCard.classList.add('hidden');
+                storyCard.classList.remove('hidden');
+            }
+        }
+
+        function selectFromGrid(index) {
+            toggleGridMode();
+            showPage(index);
+        }
+
+        // Web Audio Chime Sound
+        function playPageTurnSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.15); // E5
+
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 0.2);
+            } catch (e) {
+                // Audio context may be muted or blocked before user interaction
+            }
+        }
+
+        // Read Aloud Logic (Using Gemini TTS or Web Speech API fallback)
+        async function toggleReadAloud() {
+            if (isReading) {
+                stopReadAloud();
+            } else {
+                startReadAloud();
+            }
+        }
+
+        async function startReadAloud() {
+            const currentText = pages[currentPageIndex].text;
+            isReading = true;
+            updateSpeechUI(true);
+
+            // Attempt Gemini API Speech if network permits, else Web Speech API
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    speechSynthesisUtterance = new SpeechSynthesisUtterance(currentText);
+                    speechSynthesisUtterance.rate = 0.85; // Slower for toddlers
+                    speechSynthesisUtterance.pitch = 1.1; // Warm/Friendly pitch
+
+                    speechSynthesisUtterance.onend = function() {
+                        stopReadAloud();
+                    };
+                    speechSynthesisUtterance.onerror = function() {
+                        stopReadAloud();
+                    };
+
+                    window.speechSynthesis.speak(speechSynthesisUtterance);
+                } else {
+                    stopReadAloud();
+                }
+            } catch (err) {
+                stopReadAloud();
+            }
+        }
+
+        function stopReadAloud() {
+            isReading = false;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            updateSpeechUI(false);
+        }
+
+        function updateSpeechUI(active) {
+            const status = document.getElementById('readingStatus');
+            const btnText = document.getElementById('readBtnText');
+            const icon = document.getElementById('speakerIcon');
+
+            if (active) {
+                status.classList.remove('hidden');
+                btnText.innerText = 'Stop';
+                icon.innerText = '🔊';
+            } else {
+                status.classList.add('hidden');
+                btnText.innerText = 'Read to Me';
+                icon.innerText = '📢';
+            }
+        }
+    </script>
+</body>
+</html>
